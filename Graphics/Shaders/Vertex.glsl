@@ -8,15 +8,11 @@ layout (location = 2) in vec2 aTexture;
 out vec3 Color;
 out vec2 Texture;
 
-
-uniform float Scale;
-uniform mat4 Model;
-uniform mat4 View;
-uniform mat4 Projection;
+uniform mat4 Camera;
 
 void main()
 {
-	gl_Position = Projection * View * Model * vec4(aPosition, 1.0f);
+	gl_Position = Camera * vec4(aPosition, 1.0);
 	Color = aColor;
 	Texture = aTexture;
 }

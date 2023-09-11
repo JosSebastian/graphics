@@ -12,6 +12,7 @@
 #include "Source/Buffer/VBO.h"
 #include "Source/Buffer/EBO.h"
 #include "Source/Texture.h"
+#include "Source/Camera.h"
 
 
 GLfloat vertices[] =
@@ -89,17 +90,13 @@ int main(int argc, char const* argv[])
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-	// Inizialize Uniform
-	GLuint ScaleUL = glGetUniformLocation(shader.ID, "Scale");
-	int ModelUL = glGetUniformLocation(shader.ID, "Model");
-	int ViewUL = glGetUniformLocation(shader.ID, "View");
-	int ProjectionUL = glGetUniformLocation(shader.ID, "Projection");
-
 	// Initialize Texture
 	Texture texture1("Textures/tile.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	texture1.Unit(shader, "texture1", 0);
 
 	glEnable(GL_DEPTH_TEST);
+
+	Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -111,17 +108,8 @@ int main(int argc, char const* argv[])
 
 		shader.Activate();
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians((float)glfwGetTime() * 50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-		projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-
-		glUniform1f(ScaleUL, 0.5f);
-		glUniformMatrix4fv(ModelUL, 1, GL_FALSE, glm::value_ptr(model));
-		glUniformMatrix4fv(ViewUL, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(ProjectionUL, 1, GL_FALSE, glm::value_ptr(projection));
+		camera.Input(window);
+		camera.Matrix(shader, "Camera", 45.0f, 0.1f, 100.0f);
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
