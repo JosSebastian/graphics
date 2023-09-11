@@ -154,7 +154,7 @@ int main(int argc, char const* argv[])
 	EBO2.Unbind();
 
 	// Object and Light
-	glm::vec4 lightColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 lightColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPosition(0.5f, 0.5f, 0.5f);
 	glm::mat4 lightModel(1.0f);
 	lightModel = glm::translate(lightModel, lightPosition);
