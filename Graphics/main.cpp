@@ -109,7 +109,8 @@ int main(int argc, char const* argv[])
 		shader.Activate();
 
 		camera.Input(window);
-		camera.Matrix(shader, "Camera", 45.0f, 0.1f, 100.0f);
+		camera.Update(45.0f, 0.1f, 100.0f);
+		camera.Matrix(shader, "Camera");
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
