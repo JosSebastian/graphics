@@ -15,7 +15,8 @@
 #include "Source/Camera.h"
 
 
-GLfloat vertices[] =
+// Vertices for Object
+GLfloat ObjectVertices[] =
 { //     COORDINATES     /        COLORS      /   TexCoord  //
 	-0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
 	-0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	5.0f, 0.0f,
@@ -24,8 +25,8 @@ GLfloat vertices[] =
 	 0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	2.5f, 5.0f
 };
 
-// Indices for vertices order
-GLuint indices[] =
+// Indices for Object
+GLuint ObjectIndices[] =
 {
 	0, 1, 2,
 	0, 2, 3,
@@ -33,6 +34,36 @@ GLuint indices[] =
 	1, 2, 4,
 	2, 3, 4,
 	3, 0, 4
+};
+
+// Vertices for Light
+GLfloat LightVertices[] =
+{ //     COORDINATES     //
+	-0.1f, -0.1f,  0.1f,
+	-0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f,  0.1f,
+	-0.1f,  0.1f,  0.1f,
+	-0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f,  0.1f
+};
+
+// Indices for Light
+GLuint LightIndices[] =
+{
+	0, 1, 2,
+	0, 2, 3,
+	0, 1, 5,
+	0, 5, 4,
+	1, 2, 6,
+	1, 6, 5,
+	2, 3, 7,
+	2, 7, 6,
+	3, 0, 4,
+	3, 4, 7,
+	4, 5, 6,
+	4, 6, 7
 };
 
 // Dimensions
@@ -75,12 +106,12 @@ int main(int argc, char const* argv[])
 	// Initialize Object Shader
 	Shader object("Shaders/ObjectVertex.glsl", "Shaders/ObjectFragement.glsl");
 
-	// Initialize VAO, VBO, EBO
+	// Initialize Object VAO, VBO, EBO
 	VAO VAO1;
 	VAO1.Bind();
 
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
+	VBO VBO1(ObjectVertices, sizeof(ObjectVertices));
+	EBO EBO1(ObjectIndices, sizeof(ObjectIndices));
 
 	VAO1.Link(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
 	VAO1.Link(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -89,6 +120,39 @@ int main(int argc, char const* argv[])
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
+
+	// Initialize Light Shader
+	Shader light("Shaders/LightVertex.glsl", "Shaders/LightFragment.glsl");
+
+	// Initialize Light VAO, VBO, EBO
+	VAO VAO2;
+	VAO2.Bind();
+
+	VBO VBO2(LightVertices, sizeof(LightVertices));
+	EBO EBO2(LightIndices, sizeof(LightIndices));
+
+	VAO2.Link(VBO2, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+
+	VAO2.Unbind();
+	VBO2.Unbind();
+	EBO2.Unbind();
+
+	// Object and Light
+	glm::vec4 lightColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec3 lightPosition(0.5f, 0.5f, 0.5f);
+	glm::mat4 lightModel(1.0f);
+	lightModel = glm::translate(lightModel, lightPosition);
+
+	glm::vec3 objectPosition(0.0f, 0.0f, 0.0f);
+	glm::mat4 objectModel(1.0f);
+	objectModel = glm::translate(objectModel, objectPosition);
+
+	light.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(light.ID, "Model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+	glUniform4f(glGetUniformLocation(light.ID, "Light"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	object.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(object.ID, "Model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+	glUniform4f(glGetUniformLocation(object.ID, "Light"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 
 	// Initialize Texture
 	Texture texture1("Textures/tile.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
@@ -113,7 +177,12 @@ int main(int argc, char const* argv[])
 		camera.Matrix(object, "Camera");
 
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(ObjectIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+		light.Activate();
+		camera.Matrix(light, "Camera");
+		VAO2.Bind();
+		glDrawElements(GL_TRIANGLES, sizeof(LightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 	}

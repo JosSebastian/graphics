@@ -5,9 +5,10 @@ out vec4 Fragment;
 in vec3 Color;
 in vec2 Texture;
 
-uniform sampler2D USampler;
+uniform sampler2D Sampler;
+uniform vec4 Light;
 
 void main()
 {
-	Fragment = texture(USampler, Texture);
+	Fragment = texture(Sampler, Texture) * Light;
 }
