@@ -72,8 +72,8 @@ int main(int argc, char const* argv[])
 	}
 	glViewport(0, 0, WIDTH, HEIGHT);
 
-	// Initialize Shader
-	Shader shader("Shaders/Vertex.glsl", "Shaders/Fragement.glsl");
+	// Initialize Object Shader
+	Shader object("Shaders/ObjectVertex.glsl", "Shaders/ObjectFragement.glsl");
 
 	// Initialize VAO, VBO, EBO
 	VAO VAO1;
@@ -92,7 +92,7 @@ int main(int argc, char const* argv[])
 
 	// Initialize Texture
 	Texture texture1("Textures/tile.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
-	texture1.Unit(shader, "texture1", 0);
+	texture1.Unit(object, "texture1", 0);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -106,11 +106,11 @@ int main(int argc, char const* argv[])
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.Activate();
+		object.Activate();
 
 		camera.Input(window);
 		camera.Update(45.0f, 0.1f, 100.0f);
-		camera.Matrix(shader, "Camera");
+		camera.Matrix(object, "Camera");
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
