@@ -2,9 +2,9 @@
 
 out vec4 Fragment;
 
-uniform vec4 Light;
+uniform vec4 LightColor;
 
 void main()
 {
-    Fragment = Light;
+    Fragment = LightColor;
 }
