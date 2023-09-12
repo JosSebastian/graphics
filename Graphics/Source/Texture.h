@@ -14,9 +14,10 @@ public:
     // Properties
     GLuint ID;
     GLenum Type;
+    GLuint Slot;
 
     // Constructor
-    Texture(const char* ImagePath, GLenum Type, GLenum Slot, GLenum Format, GLenum Pixel);
+    Texture(const char* ImagePath, GLenum Type, GLuint Slot, GLenum Format, GLenum Pixel);
 
     // Destructor
     ~Texture();
@@ -28,12 +29,13 @@ public:
 
 };
 
-Texture::Texture(const char* ImagePath, GLenum Type, GLenum Slot, GLenum Format, GLenum Pixel) {
+Texture::Texture(const char* ImagePath, GLenum Type, GLuint Slot, GLenum Format, GLenum Pixel) {
 
     this->Type = Type;
 
     glGenTextures(1, &this->ID);
-    glActiveTexture(Slot);
+    glActiveTexture(GL_TEXTURE0 + Slot);
+    this->Slot = Slot;
     glBindTexture(Type, this->ID);
 
     glTexParameteri(Type, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -74,6 +76,7 @@ void Texture::Unit(Shader& Shader, const char* Uniform, GLuint Unit) {
 
 void Texture::Bind() {
 
+    glActiveTexture(GL_TEXTURE0 + Slot);
     glBindTexture(this->Type, this->ID);
 
 }

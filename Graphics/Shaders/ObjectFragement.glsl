@@ -7,7 +7,8 @@ in vec2 Texture;
 in vec3 Normal;
 in vec3 Position;
 
-uniform sampler2D Sampler;
+uniform sampler2D TSampler;
+uniform sampler2D SSampler;
 
 uniform vec4 LightColor;
 uniform vec3 LightPosition;
@@ -24,11 +25,11 @@ void main()
 
 	float Diffuse = max(dot(Normals, Direction), 0.0);
 
-	float Light = 0.5f;
+	float Light = 0.50f;
 	vec3 View = normalize(CameraPosition - Position);   
 	vec3 Reflection = reflect(-Direction, Normals);
-	float Amount = pow(max(dot(View, Reflection), 0.0f), 8);
+	float Amount = pow(max(dot(View, Reflection), 0.0f), 16);
 	float Specular = Light * Amount;
 
-	Fragment = texture(Sampler, Texture) * LightColor * (Diffuse + Ambient + Specular);
+	Fragment = texture(TSampler, Texture) * LightColor * (Diffuse + Ambient) + texture(SSampler, Texture).r * Specular;
 }
