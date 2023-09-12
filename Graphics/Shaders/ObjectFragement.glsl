@@ -12,6 +12,8 @@ uniform sampler2D Sampler;
 uniform vec4 LightColor;
 uniform vec3 LightPosition;
 
+uniform vec3 CameraPosition;
+
 void main()
 {
 
@@ -22,5 +24,11 @@ void main()
 
 	float Diffuse = max(dot(Normals, Direction), 0.0);
 
-	Fragment = texture(Sampler, Texture) * LightColor * (Diffuse + Ambient);
+	float Light = 0.5f;
+	vec3 View = normalize(CameraPosition - Position);   
+	vec3 Reflection = reflect(-Direction, Normals);
+	float Amount = pow(max(dot(View, Reflection), 0.0f), 8);
+	float Specular = Light * Amount;
+
+	Fragment = texture(Sampler, Texture) * LightColor * (Diffuse + Ambient + Specular);
 }

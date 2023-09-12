@@ -188,11 +188,14 @@ int main(int argc, char const* argv[])
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		object.Activate();
-
 		camera.Input(window);
 		camera.Update(45.0f, 0.1f, 100.0f);
+
+		object.Activate();
+		glUniform3f(glGetUniformLocation(object.ID, "CameraPosition"), camera.Position.x, camera.Position.y, camera.Position.z);
 		camera.Matrix(object, "Camera");
+
+		texture1.Bind();
 
 		VAO1.Bind();
 		glDrawElements(GL_TRIANGLES, sizeof(ObjectIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
